@@ -1,6 +1,6 @@
 <?php
 // Simple webhook tester
-$log_file = '/home/milanr/webhook-test.log';
+$log_file = '/home/milanr/logs/webhook-test.log';
 $timestamp = date('Y-m-d H:i:s');
 
 // Log everything
