@@ -75,13 +75,3 @@ logMsg("Deploy output: " . $deploy_output);
 
 logMsg("Deployment completed\n");
 ?>
-```
-
-### Step 3: Set Up Cron Job in cPanel
-
-1. Go to **cPanel → Cron Jobs**
-2. Add a new cron job:
-- **Common Settings**: "Once Per Minute (* * * * *)"
-- **Command**:
-```
-/usr/local/bin/php /home/milanr/run-deployment.php >/dev/null 2>&1
