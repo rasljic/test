@@ -6,6 +6,8 @@
 
     <body>
 
+        <p>Manual update 1</p>
+
         <?php
 
         for($i=0; $i <20; $i++) {
