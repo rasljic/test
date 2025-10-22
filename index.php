@@ -7,6 +7,7 @@
     <body>
 
         <p>Manual update 1</p>
+        <p>Automatic update 2</p>
 
         <?php
 
