@@ -18,3 +18,4 @@ file_put_contents($log_file, json_encode($data, JSON_PRETTY_PRINT) . "\n\n", FIL
 http_response_code(200);
 echo json_encode(['status' => 'logged']);
 ?>
+
