@@ -9,7 +9,7 @@ $repo_dir = '/home/milanr/repositories/test';
 
 function logMsg($msg) {
     global $log_file;
-    file_put_contents($log_file, date('[Y-m-d H:i:s] ') . $msg . "\n", FILE_APPEND);
+    file_put_contents($log_file, run - deployment . phpdate('[Y-m-d H:i:s] ') . $msg . "\n", FILE_APPEND);
 }
 
 // Check if deployment is needed
