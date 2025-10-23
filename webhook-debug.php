@@ -17,6 +17,7 @@ $debug_data = [
 
 // Try to create multiple test files to see what works
 $test_locations = [
+    '/home/milanr/test0.txt' => 'Test 0',
     '/home/milanr/logs/test1.txt' => 'Test 1',
     '/home/milanr/public_html/test2.txt' => 'Test 2',
     '/tmp/test3.txt' => 'Test 3',
