@@ -19,9 +19,15 @@ if ($data['ref'] === 'refs/heads/' . $branch) {
     exec("rsync -av --delete --exclude='.git' $repo_path/ $deploy_path/ 2>&1", $output);
 
     // Log the deployment
-    file_put_contents('/home/milanr/logs/deploy.log',
-        date('Y-m-d H:i:s') . " - Deployment triggered\n" . implode("\n", $output) . "\n\n",
-        FILE_APPEND);
+    if (!empty($output)) {
+        file_put_contents('/home/milanr/logs/deploy.log',
+            date('Y-m-d H:i:s') . " - Deployment triggered\n" . implode("\n", $output) . "\n\n",
+            FILE_APPEND);
+    } else {
+        file_put_contents('/home/milanr/logs/deploy.log',
+            date('Y-m-d H:i:s') . " - Deployment triggered but no output (exec likely disabled)\n\n",
+            FILE_APPEND);
+    }
 
     echo "Deployment successful";
 } else {
