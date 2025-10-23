@@ -1,6 +1,6 @@
 #!/usr/local/bin/php
 <?php
-// Deployment executor - runs via cron every minute
+// Deployment executor - FIXED VERSION that preserves cPanel files
 // This should be saved as /home/milanr/deploy-executor.php
 
 $trigger_file = '/home/milanr/public_html/deploy-trigger.json';
@@ -56,51 +56,52 @@ foreach ($commands as $cmd) {
     file_put_contents($log_file, "$ $cmd\n$output\n", FILE_APPEND);
 }
 
-// Now deploy the files using rsync or cp
+// Deploy files - IMPORTANT: Don't use --delete flag!
 file_put_contents($log_file, "Deploying files to $deploy_dir\n", FILE_APPEND);
 
-// Method 1: Try rsync first (most efficient)
-$rsync_cmd = "rsync -av --delete --exclude='.git' --exclude='.gitignore' --exclude='deploy-executor.php' --exclude='*.log' $repo_dir/ $deploy_dir/";
+// Use rsync WITHOUT --delete to preserve cPanel files
+$rsync_cmd = "rsync -av " .
+    "--exclude='.git' " .
+    "--exclude='.gitignore' " .
+    "--exclude='deploy-executor.php' " .
+    "--exclude='*.log' " .
+    "--exclude='.well-known' " .
+    "--exclude='cgi-bin' " .
+    "--exclude='.htaccess' " .  // Don't overwrite .htaccess
+    "--exclude='error_log' " .
+    "$repo_dir/ $deploy_dir/";
+
 $output = runCmd($rsync_cmd);
 file_put_contents($log_file, "$ $rsync_cmd\n$output\n", FILE_APPEND);
 
-// Method 2: If rsync doesn't work, try cp
+// If rsync doesn't work, use cp
 if (strpos($output, 'command not found') !== false) {
     file_put_contents($log_file, "Rsync not available, using cp instead\n", FILE_APPEND);
-    $cp_cmd = "cp -r $repo_dir/* $deploy_dir/ 2>&1";
-    $output = runCmd($cp_cmd);
-    file_put_contents($log_file, "$ $cp_cmd\n$output\n", FILE_APPEND);
-}
 
-// Method 3: If shell commands don't work, use PHP to copy files
-if (strpos($output, 'command not found') !== false || strpos($output, 'No such file') !== false) {
-    file_put_contents($log_file, "Shell commands not available, using PHP copy\n", FILE_APPEND);
+    // Get list of files to copy (excluding system files)
+    $files_to_copy = scandir($repo_dir);
+    $exclude = ['.', '..', '.git', '.gitignore', 'deploy-executor.php', '.well-known', 'cgi-bin'];
 
-    function copyDirectory($src, $dst) {
-        $dir = opendir($src);
-        @mkdir($dst);
-        $count = 0;
+    foreach ($files_to_copy as $file) {
+        if (!in_array($file, $exclude)) {
+            $src = "$repo_dir/$file";
+            $dst = "$deploy_dir/$file";
 
-        while(($file = readdir($dir)) !== false) {
-            if ($file != '.' && $file != '..' && $file != '.git' && $file != 'deploy-executor.php') {
-                if (is_dir($src . '/' . $file)) {
-                    $count += copyDirectory($src . '/' . $file, $dst . '/' . $file);
-                } else {
-                    if (copy($src . '/' . $file, $dst . '/' . $file)) {
-                        $count++;
-                    }
-                }
+            if (is_dir($src)) {
+                $cp_cmd = "cp -r $src $dst 2>&1";
+            } else {
+                $cp_cmd = "cp $src $dst 2>&1";
+            }
+
+            $output = runCmd($cp_cmd);
+            if ($output) {
+                file_put_contents($log_file, "Copied: $file\n", FILE_APPEND);
             }
         }
-        closedir($dir);
-        return $count;
     }
-
-    $files_copied = copyDirectory($repo_dir, $deploy_dir);
-    file_put_contents($log_file, "Copied $files_copied files using PHP\n", FILE_APPEND);
 }
 
-// Verify deployment by checking a key file
+// Verify deployment
 if (file_exists($deploy_dir . '/index.php')) {
     $repo_index_time = filemtime($repo_dir . '/index.php');
     $deploy_index_time = filemtime($deploy_dir . '/index.php');
@@ -111,6 +112,10 @@ if (file_exists($deploy_dir . '/index.php')) {
         file_put_contents($log_file, "⚠ Warning - index.php might not be updated\n", FILE_APPEND);
     }
 }
+
+// Ensure proper permissions
+runCmd("chmod 755 $deploy_dir");
+runCmd("find $deploy_dir -type f -name '*.php' -exec chmod 644 {} \;");
 
 file_put_contents($log_file, date('[Y-m-d H:i:s]') . " Deployment completed\n", FILE_APPEND);
 echo "Deployment completed\n";

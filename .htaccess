@@ -1,0 +1,13 @@
+# Basic .htaccess to restore access
+Options -Indexes
+RewriteEngine On
+
+# Allow access to all files
+<Files *>
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# PHP settings (if needed)
+# php_flag display_errors off
+# php_value upload_max_filesize 20M
