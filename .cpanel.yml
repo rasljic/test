@@ -2,6 +2,5 @@
 deployment:
   tasks:
     - git pull origin staging
-    - export DEPLOYPATH=/home/milanr/public_html
-    - /bin/cp -R ./* $DEPLOYPATH/
-    - /bin/cp .htaccess $DEPLOYPATH/ 2>/dev/null || true
+    - export DEPLOYPATH=/home/milanr/public_html && echo "Deployment started at $(date)" >> /home/milanr/logs/deployment.log 2>&1
+    - /bin/cp -R ./* $DEPLOYPATH/ >> /home/milanr/logs/deployment.log 2>&1
