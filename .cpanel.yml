@@ -1,6 +1,7 @@
 ---
 deployment:
   tasks:
+    - git pull origin staging
     - export DEPLOYPATH=/home/milanr/public_html
     - /bin/cp -R ./* $DEPLOYPATH/
     - /bin/cp .htaccess $DEPLOYPATH/ 2>/dev/null || true
