@@ -6,7 +6,7 @@
 
     <body>
 
-        <p>Manual update 1aaaaa-bbbbbb</p>
+        <p>Manual update 1aaaaa---ccccccc</p>
 <!--        <p>Automatic update 2bbb!!!!!!!!!!!!!!!!!!!!</p>-->
 
         <?php
