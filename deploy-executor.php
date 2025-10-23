@@ -67,7 +67,7 @@ $rsync_cmd = "rsync -av " .
     "--exclude='*.log' " .
     "--exclude='.well-known' " .
     "--exclude='cgi-bin' " .
-    "--exclude='.htaccess' " .  // Don't overwrite .htaccess
+//    "--exclude='.htaccess' " .  // Don't overwrite .htaccess
     "--exclude='error_log' " .
     "$repo_dir/ $deploy_dir/";
 
