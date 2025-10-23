@@ -2,5 +2,5 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/milanr/public_html
-    - /bin/cp -R ./* $DEPLOYPATH/
+    - /bin/cp -R --exclude='.git' ./* $DEPLOYPATH/
     - /bin/cp .htaccess $DEPLOYPATH/ 2>/dev/null || true
